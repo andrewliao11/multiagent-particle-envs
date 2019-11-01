@@ -4,7 +4,7 @@ from gym.envs.registration import register
 
 register(
     id='MultiagentSimple-v0',
-    entry_point='multiagent.envs:SimpleEnv',
+    entry_point='mpe.envs:SimpleEnv',
     # FIXME(cathywu) currently has to be exactly max_path_length parameters in
     # rllab run script
     max_episode_steps=100,
@@ -12,7 +12,7 @@ register(
 
 register(
     id='MultiagentSimpleSpeakerListener-v0',
-    entry_point='multiagent.envs:SimpleSpeakerListenerEnv',
+    entry_point='mpe.envs:SimpleSpeakerListenerEnv',
     max_episode_steps=100,
 )
 
@@ -48,8 +48,8 @@ def make_env(scenario_name, benchmark=False):
         .action_space       :   Returns the action space for each agent
         .n                  :   Returns the number of Agents
     '''
-    from multiagent.environment import MultiAgentEnv
-    import multiagent.scenarios as scenarios
+    from mpe.environment import MultiAgentEnv
+    import mpe.scenarios as scenarios
 
     # load scenario from script
     scenario = scenarios.load(scenario_name + ".py").Scenario()
