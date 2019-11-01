@@ -8,7 +8,6 @@ adversary to goal. Adversary is rewarded for its distance to the goal.
 import numpy as np
 from mpe.core import World, Agent, Landmark
 from mpe.scenario import BaseScenario
-import random
 
 
 class CryptoAgent(Agent):
@@ -18,8 +17,10 @@ class CryptoAgent(Agent):
 
 class Scenario(BaseScenario):
 
-    def make_world(self):
+    def make_world(self, seed=None):
+        seed = self.seed(seed)
         world = World()
+        world.np_random = self.np_random
         # set any world properties first
         num_agents = 3
         num_adversaries = 1
@@ -43,7 +44,6 @@ class Scenario(BaseScenario):
         self.reset_world(world)
         return world
 
-
     def reset_world(self, world):
         # random properties for agents
         for i, agent in enumerate(world.agents):
@@ -58,20 +58,20 @@ class Scenario(BaseScenario):
         for color, landmark in zip(color_list, world.landmarks):
             landmark.color = color
         # set goal landmark
-        goal = np.random.choice(world.landmarks)
+        goal = self.np_random.choice(world.landmarks)
         world.agents[1].color = goal.color
-        world.agents[2].key = np.random.choice(world.landmarks).color
+        world.agents[2].key = self.np_random.choice(world.landmarks).color
 
         for agent in world.agents:
             agent.goal_a = goal
 
         # set random initial states
         for agent in world.agents:
-            agent.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
+            agent.state.p_pos = self.np_random.uniform(-1, +1, world.dim_p)
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
         for i, landmark in enumerate(world.landmarks):
-            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
+            landmark.state.p_pos = self.np_random.uniform(-1, +1, world.dim_p)
             landmark.state.p_vel = np.zeros(world.dim_p)
 
 
@@ -152,7 +152,7 @@ class Scenario(BaseScenario):
             if prnt:
                 print('speaker')
                 print(agent.state.c)
-                print(np.concatenate([goal_color] + [key] + [confer] + [np.random.randn(1)]))
+                print(np.concatenate([goal_color] + [key] + [confer] + [self.np_random.randn(1)]))
             return np.concatenate([goal_color] + [key])
         # listener
         if not agent.speaker and not agent.adversary:

@@ -1,4 +1,5 @@
 import numpy as np
+from gym.utils import seeding
 
 # defines scenario upon which the world is built
 class BaseScenario(object):
@@ -8,3 +9,6 @@ class BaseScenario(object):
     # create initial conditions of the world
     def reset_world(self, world):
         raise NotImplementedError()
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return seed
