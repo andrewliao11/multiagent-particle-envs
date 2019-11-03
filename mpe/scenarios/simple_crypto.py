@@ -11,14 +11,15 @@ from mpe.scenario import BaseScenario
 
 
 class CryptoAgent(Agent):
-    def __init__(self):
-        super(CryptoAgent, self).__init__()
+    def __init__(self, **kwargs):
+        super(CryptoAgent, self).__init__(**kwargs)
         self.key = None
 
 class Scenario(BaseScenario):
 
-    def make_world(self, seed=None):
-        seed = self.seed(seed)
+    def make_world(self, **kwargs):
+        self.before_make_world(**kwargs)
+
         world = World()
         world.np_random = self.np_random
         # set any world properties first
@@ -26,20 +27,25 @@ class Scenario(BaseScenario):
         num_adversaries = 1
         num_landmarks = 2
         world.dim_c = 4
+        
         # add agents
-        world.agents = [CryptoAgent() for i in range(num_agents)]
+        world.agents = [CryptoAgent() for _ in range(num_agents)]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = False
             agent.adversary = True if i < num_adversaries else False
             agent.speaker = True if i == 2 else False
             agent.movable = False
+            self.change_entity_attribute(agent, **kwargs)
+        
         # add landmarks
-        world.landmarks = [Landmark() for i in range(num_landmarks)]
+        world.landmarks = [Landmark() for _ in range(num_landmarks)]
         for i, landmark in enumerate(world.landmarks):
             landmark.name = 'landmark %d' % i
             landmark.collide = False
             landmark.movable = False
+            self.change_entity_attribute(landmark, **kwargs)
+
         # make initial conditions
         self.reset_world(world)
         return world

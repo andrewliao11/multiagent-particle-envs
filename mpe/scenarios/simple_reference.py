@@ -3,24 +3,29 @@ from mpe.core import World, Agent, Landmark
 from mpe.scenario import BaseScenario
 
 class Scenario(BaseScenario):
-    def make_world(self, seed=None):
-        seed = self.seed(seed)
+    def make_world(self, **kwargs):
+        self.before_make_world(**kwargs)
+
         world = World()
         world.np_random = self.np_random
         # set any world properties first
         world.dim_c = 10
         world.collaborative = True  # whether agents share rewards
+
         # add agents
-        world.agents = [Agent() for i in range(2)]
+        world.agents = [Agent() for _ in range(2)]    
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = False
-        # add landmarks
-        world.landmarks = [Landmark() for i in range(3)]
+       
+       # add landmarks
+        world.landmarks = [Landmark() for _ in range(3)]
         for i, landmark in enumerate(world.landmarks):
             landmark.name = 'landmark %d' % i
             landmark.collide = False
             landmark.movable = False
+            self.change_entity_attribute(landmark, **kwargs)
+
         # make initial conditions
         self.reset_world(world)
         return world

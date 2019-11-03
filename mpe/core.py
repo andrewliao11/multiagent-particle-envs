@@ -25,26 +25,26 @@ class Action(object):
 
 # properties and state of physical world entity
 class Entity(object):
-    def __init__(self):
+    def __init__(self, **kwargs):
         # name 
         self.name = ''
         # properties:
-        self.size = 0.050
+        self.size = kwargs['size_fn']() if 'size_fn' in kwargs else 0.050
         # entity can move / be pushed
         self.movable = False
         # entity collides with others
         self.collide = True
         # material density (affects mass)
-        self.density = 25.0
+        self.density = kwargs['density_fn']() if 'density_fn' in kwargs else 25.0
         # color
         self.color = None
         # max speed and accel
-        self.max_speed = None
-        self.accel = None
+        self.max_speed = kwargs['max_speed_fn']() if 'max_speed_fn' in kwargs else None
+        self.accel = kwargs['accel_fn']() if 'accel_fn' in kwargs else None
         # state
         self.state = EntityState()
         # mass
-        self.initial_mass = 1.0
+        self.initial_mass = kwargs['init_mass_fn']() if 'init_mass_fn' in kwargs else 1.0
 
     @property
     def mass(self):
@@ -52,13 +52,13 @@ class Entity(object):
 
 # properties of landmark entities
 class Landmark(Entity):
-     def __init__(self):
-        super(Landmark, self).__init__()
+     def __init__(self, **kwargs):
+        super(Landmark, self).__init__(**kwargs)
 
 # properties of agent entities
 class Agent(Entity):
-    def __init__(self):
-        super(Agent, self).__init__()
+    def __init__(self, **kwargs):
+        super(Agent, self).__init__(**kwargs)
         # agents are movable by default
         self.movable = True
         # cannot send communication signals
@@ -70,7 +70,7 @@ class Agent(Entity):
         # communication noise amount
         self.c_noise = None
         # control range
-        self.u_range = 1.0
+        self.u_range = kwargs['u_range_fn']() if 'u_range_fn' in kwargs else 1.0
         # state
         self.state = AgentState()
         # action

@@ -3,8 +3,9 @@ from mpe.core import World, Agent, Landmark
 from mpe.scenario import BaseScenario
 
 class Scenario(BaseScenario):
-    def make_world(self, seed=None):
-        seed = self.seed(seed)
+    def make_world(self, **kwargs):
+        self.before_make_world(**kwargs)
+
         world = World()
         world.np_random = self.np_random
         # set any world properties first
@@ -12,8 +13,9 @@ class Scenario(BaseScenario):
         num_agents = 2
         num_adversaries = 1
         num_landmarks = 2
+
         # add agents
-        world.agents = [Agent() for i in range(num_agents)]
+        world.agents = [Agent() for _ in range(num_agents)]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = True
@@ -22,12 +24,16 @@ class Scenario(BaseScenario):
                 agent.adversary = True
             else:
                 agent.adversary = False
+            self.change_entity_attribute(agent, **kwargs)
+        
         # add landmarks
-        world.landmarks = [Landmark() for i in range(num_landmarks)]
+        world.landmarks = [Landmark() for _ in range(num_landmarks)]
         for i, landmark in enumerate(world.landmarks):
             landmark.name = 'landmark %d' % i
             landmark.collide = False
             landmark.movable = False
+            self.change_entity_attribute(landmark, **kwargs)
+            
         # make initial conditions
         self.reset_world(world)
         return world
