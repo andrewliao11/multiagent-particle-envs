@@ -19,6 +19,7 @@ class Scenario(BaseScenario):
 
         # add agents
         world.agents = [Agent() for _ in range(num_agents)]
+        world.policy_agents_groups = [0] * num_adversaries + [1] * (num_agents - num_adversaries)
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = False
