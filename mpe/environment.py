@@ -17,7 +17,7 @@ class MultiAgentEnv(gym.Env):
 
         self.world = world
         self.agents = self.world.policy_agents
-        self.policy_agents_groups = self.world.policy_agents_groups
+        #self.policy_agents_groups = self.world.policy_agents_groups
 
         # set required vectorized gym env property
         self.n = len(world.policy_agents)
