@@ -30,6 +30,7 @@ class Scenario(BaseScenario):
         
         # add agents
         world.agents = [CryptoAgent() for _ in range(num_agents)]
+        world.policy_agents_groups = [0, 1, 2]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = False
