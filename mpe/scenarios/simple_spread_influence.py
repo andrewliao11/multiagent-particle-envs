@@ -1,3 +1,4 @@
+import itertools
 import numpy as np
 from mpe.core import World, Agent, Landmark
 from mpe.scenario import BaseScenario
@@ -83,10 +84,26 @@ class Scenario(BaseScenario):
     def reward(self, agent, world):
         # Agents are rewarded based on minimum agent distance to each landmark, penalized for collisions
         rew = 0
-        for a, l in zip(world.agents, world.landmarks):
-            dist = np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos)))
-            rew -= dist * a.influence
 
+        num_agents = len(world.agents)
+        num_landmarks = len(world.landmarks)
+        # Calculate distance of each possible pairs, O(n^2)
+        dist_matrix = np.zeros([num_landmarks, num_agents])
+        for i, l in enumerate(world.landmarks):
+            for j, a in enumerate(world.agents):
+                dist_matrix[i][j] = np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos)))
+            
+        # Enumerate all the possible assignment, ensuring that the relation between landmark and agent is one-to-one
+        dists = []
+        assignments = []
+        for assignment in itertools.permutations(np.arange(num_agents), num_agents):
+            dists.append(sum([dist_matrix[i][a] for i, a in enumerate(assignment)]))
+            assignments.append(assignment)
+
+        # Apply agent influence
+        idx = np.argmin(np.array(dists))
+        rew -= sum([dist_matrix[i][a] * world.agents[a].influence for i, a in enumerate(assignments[idx])])
+        
         if agent.collide:
             for a in world .agents:
                 if self.is_collision(a, agent):

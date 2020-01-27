@@ -77,6 +77,9 @@ class Agent(Entity):
         self.action = Action()
         # script behavior to execute
         self.action_callback = None
+    
+    def set_influence(self, i):
+        self.influence = i
 
 # multi-agent world
 class World(object):
@@ -196,7 +199,3 @@ class World(object):
         force_a = +force if entity_a.movable else None
         force_b = -force if entity_b.movable else None
         return [force_a, force_b]
-
-    def initialize_weights(self, weights):
-        assert len(weights) == len(self.agents)
-        self.weights = weights
