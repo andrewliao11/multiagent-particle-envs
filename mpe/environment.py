@@ -1,4 +1,5 @@
 import gym
+import math
 from gym import spaces
 from gym.envs.registration import EnvSpec
 import numpy as np
@@ -229,12 +230,22 @@ class MultiAgentEnv(gym.Env):
             from mpe import rendering
             self.render_geoms = []
             self.render_geoms_xform = []
+            
+            # Set alpha for agents with different influence
+            influences = []
+            for entity in self.world.entities:
+                if 'agent' in entity.name and hasattr(entity, "influence"):
+                    influences.append(entity.influence)
+            
+            normalizer = np.array(influences).sum()
+            set_alpha = lambda influence: 0.4 + 0.6 * (influence / normalizer)
+                
             for entity in self.world.entities:
                 geom = rendering.make_circle(entity.size)
                 xform = rendering.Transform()
                 if 'agent' in entity.name:
                     if hasattr(entity, "influence"):
-                        alpha = entity.influence * 0.5
+                        alpha = set_alpha(entity.influence)
                     else:
                         alpha = 0.5
 
